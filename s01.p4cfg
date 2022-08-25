@@ -1,0 +1,331 @@
+{
+    "tables": {
+        "ingress::connections": {
+            "rules": [
+                {
+                    "action": {
+                        "data": {
+                            "difference": {
+                                "value": "4042548677"
+                            }
+                        }, 
+                        "type": "ingress::saveDifferenceValue"
+                    }, 
+                    "name": "rule_10703", 
+                    "match": {
+                        "ingress::scalars.metadata@connectionHash": {
+                            "value": "10703"
+                        }
+                    }
+                }, 
+                {
+                    "action": {
+                        "data": {
+                            "difference": {
+                                "value": "252418619"
+                            }
+                        }, 
+                        "type": "ingress::saveDifferenceValue"
+                    }, 
+                    "name": "rule_58152", 
+                    "match": {
+                        "ingress::scalars.metadata@connectionHash": {
+                            "value": "58152"
+                        }
+                    }
+                }, 
+                {
+                    "action": {
+                        "data": {
+                            "difference": {
+                                "value": "415729100"
+                            }
+                        }, 
+                        "type": "ingress::saveDifferenceValue"
+                    }, 
+                    "name": "rule_22409", 
+                    "match": {
+                        "ingress::scalars.metadata@connectionHash": {
+                            "value": "22409"
+                        }
+                    }
+                }, 
+                {
+                    "action": {
+                        "data": {
+                            "difference": {
+                                "value": "3879238196"
+                            }
+                        }, 
+                        "type": "ingress::saveDifferenceValue"
+                    }, 
+                    "name": "rule_62654", 
+                    "match": {
+                        "ingress::scalars.metadata@connectionHash": {
+                            "value": "62654"
+                        }
+                    }
+                }, 
+                {
+                    "action": {
+                        "data": {
+                            "difference": {
+                                "value": "609250454"
+                            }
+                        }, 
+                        "type": "ingress::saveDifferenceValue"
+                    }, 
+                    "name": "rule_41832", 
+                    "match": {
+                        "ingress::scalars.metadata@connectionHash": {
+                            "value": "41832"
+                        }
+                    }
+                }, 
+                {
+                    "action": {
+                        "data": {
+                            "difference": {
+                                "value": "3685716842"
+                            }
+                        }, 
+                        "type": "ingress::saveDifferenceValue"
+                    }, 
+                    "name": "rule_42689", 
+                    "match": {
+                        "ingress::scalars.metadata@connectionHash": {
+                            "value": "42689"
+                        }
+                    }
+                }, 
+                {
+                    "action": {
+                        "data": {
+                            "difference": {
+                                "value": "1355762323"
+                            }
+                        }, 
+                        "type": "ingress::saveDifferenceValue"
+                    }, 
+                    "name": "rule_17652", 
+                    "match": {
+                        "ingress::scalars.metadata@connectionHash": {
+                            "value": "17652"
+                        }
+                    }
+                }, 
+                {
+                    "action": {
+                        "data": {
+                            "difference": {
+                                "value": "2939204973"
+                            }
+                        }, 
+                        "type": "ingress::saveDifferenceValue"
+                    }, 
+                    "name": "rule_37117", 
+                    "match": {
+                        "ingress::scalars.metadata@connectionHash": {
+                            "value": "37117"
+                        }
+                    }
+                }, 
+                {
+                    "action": {
+                        "data": {
+                            "difference": {
+                                "value": "1014567082"
+                            }
+                        }, 
+                        "type": "ingress::saveDifferenceValue"
+                    }, 
+                    "name": "rule_39093", 
+                    "match": {
+                        "ingress::scalars.metadata@connectionHash": {
+                            "value": "39093"
+                        }
+                    }
+                }, 
+                {
+                    "action": {
+                        "data": {
+                            "difference": {
+                                "value": "3280400214"
+                            }
+                        }, 
+                        "type": "ingress::saveDifferenceValue"
+                    }, 
+                    "name": "rule_61034", 
+                    "match": {
+                        "ingress::scalars.metadata@connectionHash": {
+                            "value": "61034"
+                        }
+                    }
+                }, 
+                {
+                    "action": {
+                        "data": {
+                            "difference": {
+                                "value": "1099801529"
+                            }
+                        }, 
+                        "type": "ingress::saveDifferenceValue"
+                    }, 
+                    "name": "rule_53183", 
+                    "match": {
+                        "ingress::scalars.metadata@connectionHash": {
+                            "value": "53183"
+                        }
+                    }
+                }, 
+                {
+                    "action": {
+                        "data": {
+                            "difference": {
+                                "value": "3195165767"
+                            }
+                        }, 
+                        "type": "ingress::saveDifferenceValue"
+                    }, 
+                    "name": "rule_44665", 
+                    "match": {
+                        "ingress::scalars.metadata@connectionHash": {
+                            "value": "44665"
+                        }
+                    }
+                }, 
+                {
+                    "action": {
+                        "data": {
+                            "difference": {
+                                "value": "3369837721"
+                            }
+                        }, 
+                        "type": "ingress::saveDifferenceValue"
+                    }, 
+                    "name": "rule_5964", 
+                    "match": {
+                        "ingress::scalars.metadata@connectionHash": {
+                            "value": "5964"
+                        }
+                    }
+                }, 
+                {
+                    "action": {
+                        "data": {
+                            "difference": {
+                                "value": "925129575"
+                            }
+                        }, 
+                        "type": "ingress::saveDifferenceValue"
+                    }, 
+                    "name": "rule_39251", 
+                    "match": {
+                        "ingress::scalars.metadata@connectionHash": {
+                            "value": "39251"
+                        }
+                    }
+                }, 
+                {
+                    "action": {
+                        "data": {
+                            "difference": {
+                                "value": "1945281248"
+                            }
+                        }, 
+                        "type": "ingress::saveDifferenceValue"
+                    }, 
+                    "name": "rule_23911", 
+                    "match": {
+                        "ingress::scalars.metadata@connectionHash": {
+                            "value": "23911"
+                        }
+                    }
+                }, 
+                {
+                    "action": {
+                        "data": {
+                            "difference": {
+                                "value": "2349686048"
+                            }
+                        }, 
+                        "type": "ingress::saveDifferenceValue"
+                    }, 
+                    "name": "rule_39605", 
+                    "match": {
+                        "ingress::scalars.metadata@connectionHash": {
+                            "value": "39605"
+                        }
+                    }
+                }
+            ]
+        }, 
+        "ingress::ipv4_lpm": {
+            "rules": [
+                {
+                    "action": {
+                        "data": {
+                            "dstAddr": {
+                                "value": "00:25:90:c9:1f:fa"
+                            }, 
+                            "port": {
+                                "value": "p1"
+                            }
+                        }, 
+                        "type": "ingress::ipv4_forward"
+                    }, 
+                    "name": "server", 
+                    "match": {
+                        "ipv4.dstAddr": {
+                            "value": "192.168.168.50/32"
+                        }
+                    }
+                }, 
+                {
+                    "action": {
+                        "data": {
+                            "dstAddr": {
+                                "value": "00:25:90:c9:1f:f9"
+                            }, 
+                            "port": {
+                                "value": "p0"
+                            }
+                        }, 
+                        "type": "ingress::ipv4_forward"
+                    }, 
+                    "name": "clients", 
+                    "match": {
+                        "ipv4.dstAddr": {
+                            "value": "0.0.0.0/0"
+                        }
+                    }
+                }, 
+                {
+                    "action": {
+                        "data": {
+                            "dstAddr": {
+                                "value": "00:25:90:c9:1f:f9"
+                            }, 
+                            "port": {
+                                "value": "p0"
+                            }
+                        }, 
+                        "type": "ingress::ipv4_forward"
+                    }, 
+                    "name": "client", 
+                    "match": {
+                        "ipv4.dstAddr": {
+                            "value": "192.168.214.108/32"
+                        }
+                    }
+                }
+            ], 
+            "default_rule": {
+                "action": {
+                    "type": "ingress::drop"
+                }, 
+                "name": "application_default"
+            }
+        }
+    }
+}

@@ -1,4 +1,11 @@
 .idea
 out
+venv
 sdk6_rte
 *.pyc
+*.nffw
+*.bat
+*.p4dbg
+*.psdbg
+*.mak
+*.pcap
