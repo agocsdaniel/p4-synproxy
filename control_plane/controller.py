@@ -41,14 +41,13 @@ class PacketProcessor(object):
             # associate the registration handle with the digest data
             self.digest_map[dh] = {'desc': d, 'count': 0}
 
-
     def __del__(self):
         RTEInterface.Disconnect()
 
-#    def __call__(self, msg):
-#        t1 = self.FuncThread(self.parse, msg)
-#        t1.daemon = True
-#        t1.start()
+    #    def __call__(self, msg):
+    #        t1 = self.FuncThread(self.parse, msg)
+    #        t1.daemon = True
+    #        t1.start()
 
     def poll(self):
 
@@ -74,7 +73,7 @@ class PacketProcessor(object):
                         print(dgflddata)
                         self.debug_print(digest_data, dgflddata)
 
-                        handler = getattr(self,'on_' + digest_data['desc']['name'], None)
+                        handler = getattr(self, 'on_' + digest_data['desc']['name'], None)
                         if handler:
                             handler(digest_data, dgflddata)
 
@@ -84,7 +83,6 @@ class PacketProcessor(object):
 
         except KeyboardInterrupt:  # exit on control-c
             pass
-
 
     def debug_print(self, dgdata, dgflddata):
         print("digest %s (P4 ID %d, P4 fieldlist %s)[%d] {" % (
@@ -120,15 +118,13 @@ class PacketProcessor(object):
             RTEInterface.Tables.AddRule(tbl_id, rule_name, default_rule, match, actions, priority, timeout)
         print("connection is added with Hash:", str(hash), "diff:", str(diff))
 
-
-
     def on__digest_learn_connection_t_1(self, dgdata, dgflddata):
         prefix = 'ingress::send_digest_connection::tmp.'
         self.conn_to_table(dgflddata[prefix + 'connection_hash'], dgflddata[prefix + 'seqNo'])
         self.conn_to_table(dgflddata[prefix + 'connection_hash_rev'], dgflddata[prefix + 'seqNo_rev'])
 
-        #self.ruleNum += 1
-        print("Done Adding Rule") #, self.ruleNum)
+        # self.ruleNum += 1
+        print("Done Adding Rule")  # , self.ruleNum)
         print()
 
 

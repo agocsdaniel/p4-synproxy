@@ -383,15 +383,6 @@ control MyIngress(inout headers hdr, inout metadata meta,
 
 
     apply {
-        if (hdr.tcp.isValid()){
-        meta.debug_digest.type = 0;
-        meta.debug_digest.data = (bit<32>)meta.debug_bool;
-        meta.debug_digest.extra_1 = (bit<32>)standard_metadata.ingress_port;
-        meta.debug_digest.extra_2 = (bit<32>)hdr.tcp.srcPort;
-
-        //digest packet
-        digest(1, meta.debug_digest);}
-
         // Normal forwarding scenario after processing based on the scenario
         if (hdr.ipv4.isValid()) {
             ipv4_lpm.apply();
