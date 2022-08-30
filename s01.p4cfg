@@ -6,15 +6,27 @@
                     "action": {
                         "data": {
                             "difference": {
-                                "value": "4042548677"
+                                "value": "2015740573"
                             }
                         }, 
                         "type": "ingress::saveDifferenceValue"
                     }, 
-                    "name": "rule_10703", 
+                    "name": "rule_01ce98eb95b4d8b078f676bde1a39c2bb35853c2", 
                     "match": {
-                        "ingress::scalars.metadata@connectionHash": {
-                            "value": "10703"
+                        "ipv4.srcAddr": {
+                            "value": "3232278578"
+                        }, 
+                        "ipv4.protocol": {
+                            "value": "6"
+                        }, 
+                        "ipv4.dstAddr": {
+                            "value": "3232278636"
+                        }, 
+                        "tcp.dstPort": {
+                            "value": "44266"
+                        }, 
+                        "tcp.srcPort": {
+                            "value": "80"
                         }
                     }
                 }, 
@@ -22,15 +34,27 @@
                     "action": {
                         "data": {
                             "difference": {
-                                "value": "252418619"
+                                "value": "2279226723"
                             }
                         }, 
                         "type": "ingress::saveDifferenceValue"
                     }, 
-                    "name": "rule_58152", 
+                    "name": "rule_d6d5eb0082c2ed773939015ee01d57e55f35d895", 
                     "match": {
-                        "ingress::scalars.metadata@connectionHash": {
-                            "value": "58152"
+                        "ipv4.srcAddr": {
+                            "value": "3232278636"
+                        }, 
+                        "ipv4.protocol": {
+                            "value": "6"
+                        }, 
+                        "ipv4.dstAddr": {
+                            "value": "3232278578"
+                        }, 
+                        "tcp.dstPort": {
+                            "value": "80"
+                        }, 
+                        "tcp.srcPort": {
+                            "value": "44266"
                         }
                     }
                 }, 
@@ -38,15 +62,27 @@
                     "action": {
                         "data": {
                             "difference": {
-                                "value": "415729100"
+                                "value": "2015008742"
                             }
                         }, 
                         "type": "ingress::saveDifferenceValue"
                     }, 
-                    "name": "rule_22409", 
+                    "name": "rule_75e1f06dd8797539b84e0e4bba9087c848be2e49", 
                     "match": {
-                        "ingress::scalars.metadata@connectionHash": {
-                            "value": "22409"
+                        "ipv4.srcAddr": {
+                            "value": "3232278578"
+                        }, 
+                        "ipv4.protocol": {
+                            "value": "6"
+                        }, 
+                        "ipv4.dstAddr": {
+                            "value": "3232278636"
+                        }, 
+                        "tcp.dstPort": {
+                            "value": "40958"
+                        }, 
+                        "tcp.srcPort": {
+                            "value": "80"
                         }
                     }
                 }, 
@@ -54,15 +90,27 @@
                     "action": {
                         "data": {
                             "difference": {
-                                "value": "3879238196"
+                                "value": "2279958554"
                             }
                         }, 
                         "type": "ingress::saveDifferenceValue"
                     }, 
-                    "name": "rule_62654", 
+                    "name": "rule_250b53a8558ada104c58abc32f8b194c86d88d34", 
                     "match": {
-                        "ingress::scalars.metadata@connectionHash": {
-                            "value": "62654"
+                        "ipv4.srcAddr": {
+                            "value": "3232278636"
+                        }, 
+                        "ipv4.protocol": {
+                            "value": "6"
+                        }, 
+                        "ipv4.dstAddr": {
+                            "value": "3232278578"
+                        }, 
+                        "tcp.dstPort": {
+                            "value": "80"
+                        }, 
+                        "tcp.srcPort": {
+                            "value": "40958"
                         }
                     }
                 }, 
@@ -70,15 +118,27 @@
                     "action": {
                         "data": {
                             "difference": {
-                                "value": "609250454"
+                                "value": "2628120207"
                             }
                         }, 
                         "type": "ingress::saveDifferenceValue"
                     }, 
-                    "name": "rule_41832", 
+                    "name": "rule_2abab35a57c758ff40fe974e60422444b03497ad", 
                     "match": {
-                        "ingress::scalars.metadata@connectionHash": {
-                            "value": "41832"
+                        "ipv4.srcAddr": {
+                            "value": "3232278578"
+                        }, 
+                        "ipv4.protocol": {
+                            "value": "6"
+                        }, 
+                        "ipv4.dstAddr": {
+                            "value": "3232278636"
+                        }, 
+                        "tcp.dstPort": {
+                            "value": "41750"
+                        }, 
+                        "tcp.srcPort": {
+                            "value": "80"
                         }
                     }
                 }, 
@@ -86,246 +146,31 @@
                     "action": {
                         "data": {
                             "difference": {
-                                "value": "3685716842"
+                                "value": "1666847089"
                             }
                         }, 
                         "type": "ingress::saveDifferenceValue"
                     }, 
-                    "name": "rule_42689", 
+                    "name": "rule_01f57328eb348d2ee93fb7a9524d7cf9b5358dc1", 
                     "match": {
-                        "ingress::scalars.metadata@connectionHash": {
-                            "value": "42689"
-                        }
-                    }
-                }, 
-                {
-                    "action": {
-                        "data": {
-                            "difference": {
-                                "value": "1355762323"
-                            }
+                        "ipv4.srcAddr": {
+                            "value": "3232278636"
                         }, 
-                        "type": "ingress::saveDifferenceValue"
-                    }, 
-                    "name": "rule_17652", 
-                    "match": {
-                        "ingress::scalars.metadata@connectionHash": {
-                            "value": "17652"
-                        }
-                    }
-                }, 
-                {
-                    "action": {
-                        "data": {
-                            "difference": {
-                                "value": "2939204973"
-                            }
+                        "ipv4.protocol": {
+                            "value": "6"
                         }, 
-                        "type": "ingress::saveDifferenceValue"
-                    }, 
-                    "name": "rule_37117", 
-                    "match": {
-                        "ingress::scalars.metadata@connectionHash": {
-                            "value": "37117"
-                        }
-                    }
-                }, 
-                {
-                    "action": {
-                        "data": {
-                            "difference": {
-                                "value": "1014567082"
-                            }
+                        "ipv4.dstAddr": {
+                            "value": "3232278578"
                         }, 
-                        "type": "ingress::saveDifferenceValue"
-                    }, 
-                    "name": "rule_39093", 
-                    "match": {
-                        "ingress::scalars.metadata@connectionHash": {
-                            "value": "39093"
-                        }
-                    }
-                }, 
-                {
-                    "action": {
-                        "data": {
-                            "difference": {
-                                "value": "3280400214"
-                            }
+                        "tcp.dstPort": {
+                            "value": "80"
                         }, 
-                        "type": "ingress::saveDifferenceValue"
-                    }, 
-                    "name": "rule_61034", 
-                    "match": {
-                        "ingress::scalars.metadata@connectionHash": {
-                            "value": "61034"
-                        }
-                    }
-                }, 
-                {
-                    "action": {
-                        "data": {
-                            "difference": {
-                                "value": "1099801529"
-                            }
-                        }, 
-                        "type": "ingress::saveDifferenceValue"
-                    }, 
-                    "name": "rule_53183", 
-                    "match": {
-                        "ingress::scalars.metadata@connectionHash": {
-                            "value": "53183"
-                        }
-                    }
-                }, 
-                {
-                    "action": {
-                        "data": {
-                            "difference": {
-                                "value": "3195165767"
-                            }
-                        }, 
-                        "type": "ingress::saveDifferenceValue"
-                    }, 
-                    "name": "rule_44665", 
-                    "match": {
-                        "ingress::scalars.metadata@connectionHash": {
-                            "value": "44665"
-                        }
-                    }
-                }, 
-                {
-                    "action": {
-                        "data": {
-                            "difference": {
-                                "value": "3369837721"
-                            }
-                        }, 
-                        "type": "ingress::saveDifferenceValue"
-                    }, 
-                    "name": "rule_5964", 
-                    "match": {
-                        "ingress::scalars.metadata@connectionHash": {
-                            "value": "5964"
-                        }
-                    }
-                }, 
-                {
-                    "action": {
-                        "data": {
-                            "difference": {
-                                "value": "925129575"
-                            }
-                        }, 
-                        "type": "ingress::saveDifferenceValue"
-                    }, 
-                    "name": "rule_39251", 
-                    "match": {
-                        "ingress::scalars.metadata@connectionHash": {
-                            "value": "39251"
-                        }
-                    }
-                }, 
-                {
-                    "action": {
-                        "data": {
-                            "difference": {
-                                "value": "1945281248"
-                            }
-                        }, 
-                        "type": "ingress::saveDifferenceValue"
-                    }, 
-                    "name": "rule_23911", 
-                    "match": {
-                        "ingress::scalars.metadata@connectionHash": {
-                            "value": "23911"
-                        }
-                    }
-                }, 
-                {
-                    "action": {
-                        "data": {
-                            "difference": {
-                                "value": "2349686048"
-                            }
-                        }, 
-                        "type": "ingress::saveDifferenceValue"
-                    }, 
-                    "name": "rule_39605", 
-                    "match": {
-                        "ingress::scalars.metadata@connectionHash": {
-                            "value": "39605"
+                        "tcp.srcPort": {
+                            "value": "41750"
                         }
                     }
                 }
             ]
-        }, 
-        "ingress::ipv4_lpm": {
-            "rules": [
-                {
-                    "action": {
-                        "data": {
-                            "dstAddr": {
-                                "value": "00:25:90:c9:1f:fa"
-                            }, 
-                            "port": {
-                                "value": "p1"
-                            }
-                        }, 
-                        "type": "ingress::ipv4_forward"
-                    }, 
-                    "name": "server", 
-                    "match": {
-                        "ipv4.dstAddr": {
-                            "value": "192.168.168.50/32"
-                        }
-                    }
-                }, 
-                {
-                    "action": {
-                        "data": {
-                            "dstAddr": {
-                                "value": "00:25:90:c9:1f:f9"
-                            }, 
-                            "port": {
-                                "value": "p0"
-                            }
-                        }, 
-                        "type": "ingress::ipv4_forward"
-                    }, 
-                    "name": "clients", 
-                    "match": {
-                        "ipv4.dstAddr": {
-                            "value": "0.0.0.0/0"
-                        }
-                    }
-                }, 
-                {
-                    "action": {
-                        "data": {
-                            "dstAddr": {
-                                "value": "00:25:90:c9:1f:f9"
-                            }, 
-                            "port": {
-                                "value": "p0"
-                            }
-                        }, 
-                        "type": "ingress::ipv4_forward"
-                    }, 
-                    "name": "client", 
-                    "match": {
-                        "ipv4.dstAddr": {
-                            "value": "192.168.214.108/32"
-                        }
-                    }
-                }
-            ], 
-            "default_rule": {
-                "action": {
-                    "type": "ingress::drop"
-                }, 
-                "name": "application_default"
-            }
         }
     }
 }

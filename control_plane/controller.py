@@ -1,4 +1,5 @@
 import collections
+import hashlib
 import json
 import argparse
 import sys
@@ -95,33 +96,58 @@ class PacketProcessor(object):
             print("    %s : 0x%x" % (flddesc, fielddata))
         print("}\n")
 
-    def conn_to_table(self, hash, diff):
+    def conn_to_table(self, src_addr, dst_addr, src_port, dst_port, protocol, seq_diff):
         tbl_id = "ingress::connections"
         priority = 1
-        rule_name = "rule_" + str(hash)
         default_rule = False
         match = json.dumps({
-            "ingress::scalars.metadata@connectionHash": {
-                "value": hash
+            "ipv4.srcAddr": {
+                "value": src_addr
+            },
+            "ipv4.dstAddr": {
+                "value": dst_addr
+            },
+            "tcp.srcPort": {
+                "value": src_port
+            },
+            "tcp.dstPort": {
+                "value": dst_port
+            },
+            "ipv4.protocol": {
+                "value": protocol
             }
         }).encode('utf-8')
+        rule_name = "rule_" + str(hashlib.sha1(match).hexdigest())
         actions = json.dumps({
             "type": "ingress::saveDifferenceValue",
             "data": {
                 "difference": {
-                    "value": diff
+                    "value": seq_diff
                 }
             }
         }).encode('utf-8')
         timeout = None
         with THRIFT_API_LOCK:
             RTEInterface.Tables.AddRule(tbl_id, rule_name, default_rule, match, actions, priority, timeout)
-        print("connection is added with Hash:", str(hash), "diff:", str(diff))
+        print("connection is added with diff:", str(seq_diff))
 
     def on__digest_learn_connection_t_1(self, dgdata, dgflddata):
-        prefix = 'ingress::send_digest_connection::tmp.'
-        self.conn_to_table(dgflddata[prefix + 'connection_hash'], dgflddata[prefix + 'seqNo'])
-        self.conn_to_table(dgflddata[prefix + 'connection_hash_rev'], dgflddata[prefix + 'seqNo_rev'])
+        prefix = 'ingress::send_digest_connection::tmp_2.'
+        self.conn_to_table(
+            src_addr=dgflddata[prefix + 'srcAddr'],
+            dst_addr=dgflddata[prefix + 'dstAddr'],
+            src_port=dgflddata[prefix + 'srcPort'],
+            dst_port=dgflddata[prefix + 'dstPort'],
+            protocol=dgflddata[prefix + 'protocol'],
+            seq_diff=dgflddata[prefix + 'seqDiff'])
+
+        self.conn_to_table(
+            src_addr=dgflddata[prefix + 'dstAddr'],
+            dst_addr=dgflddata[prefix + 'srcAddr'],
+            src_port=dgflddata[prefix + 'dstPort'],
+            dst_port=dgflddata[prefix + 'srcPort'],
+            protocol=dgflddata[prefix + 'protocol'],
+            seq_diff=dgflddata[prefix + 'seqDiff_rev'])
 
         # self.ruleNum += 1
         print("Done Adding Rule")  # , self.ruleNum)

@@ -19,15 +19,16 @@
 #include "headers.p4"
 
 struct learn_connection_t {
-    bit<8> type;
-    bit<32> connection_hash;
-    bit<32> seqNo;
-    bit<32> connection_hash_rev;
-    bit<32> seqNo_rev;
+    bit<32> srcAddr;
+    bit<32> dstAddr;
+    bit<16> srcPort;
+    bit<16> dstPort;
+    bit<8> protocol;
+    bit<32> seqDiff;
+    bit<32> seqDiff_rev;
 }
 
 struct learn_debug_t {
-    bit<8> type;    // should be always set to 0 for debug messages
     bit<32> data;   // data fields are set depending on the debug parameters
     bit<32> extra_1;
     bit<32> extra_2;
@@ -37,12 +38,10 @@ struct learn_debug_t {
 
 struct metadata {
     bit<1> is_valid_cookie;
-    bit<32> connectionHash;
-    bit<32> connectionHash_rev;
+//    bit<32> connectionHash;
+//    bit<32> connectionHash_rev;
     bit<1> is_connection_established;
     bit<32> tempDiff;
-    bit<32> seqDiff;
-    bit<32> seqDiff_rev;
     bit<32> cookieValue;
     bit<16> tcpLength; // this value is computed for each packet for TCP checksum recalculations
     learn_connection_t seq_digest; // Structure for sending digest messages that contain connection information and seqNo
@@ -64,14 +63,59 @@ struct metadata {
 control MyIngress(inout headers hdr, inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
 
+    action compute_cookie_value(bit <32> cookieIp, bit <16> cookiePort) {
+        //ref" https://cr.yp.to/syncookies.html
+        //generate a valid cookie, check limitations on each part
+        //syn cookie is the initial sequence number selected by the proxy
+        // first 5 bits: t mod 32, where t is 32 bit time counter
+        // next 3 bits: encoding of MSS selected by the server in response to client's MSS
+        // bottom 24 bits: hash of client IP address port and t
+        // random value for all connections for now
+        bit<5> time = TIMER_COUNT;   //constant value for time
+        bit<3> mss_encoding = MSS_SERVER_ENCODING_VALUE; //random value for mss encvoding
+        bit<24> hash_value;
+
+        //metadata has a timestamp standard_metadata.enq_timestamp ---> bit <32>
+
+        // compute the hash over source address and port number in addition to time counter
+        //check if you need information for the server as well inside the hash or just the client!
+        hash(hash_value, HashAlgorithm.crc16, (bit<24>)0, {
+            cookieIp,
+            cookiePort,
+            time
+            }, (bit<24>)2^24);
+
+        //TODO: find an alternative way to concatenate bit strings --> P4_16 spec says ++ but it does not work!
+    	bit <8> temp = (bit<8>)time;
+    	bit <8> tempWT = temp << 3;
+    	bit <8> tempWTE = tempWT | (bit<8>)mss_encoding;
+    	bit <32> tempSeq = (bit<32>)tempWTE;
+    	bit <32> tempSeqS = tempSeq << 24;
+        meta.cookieValue = tempSeqS | (bit<32>)hash_value;
+    }
+
+    action compute_cookie_value_with_direction() {
+        bit <32> cookieIp = hdr.ipv4.srcAddr;
+        bit <16> cookiePort = hdr.tcp.srcPort;
+        
+        //if(hdr.ipv4.srcAddr == SERVER_ADDRESS){
+        if(standard_metadata.ingress_port == SERVER_PORT){
+            cookieIp = hdr.ipv4.dstAddr;
+            cookiePort = hdr.tcp.dstPort;
+        }
+
+        compute_cookie_value(cookieIp, cookiePort);
+    }
+
     action send_digest_connection() {
-        //send digest message to control plane, structure can be adjusted to send any data for debugging
-        // digest messages for connection information has a type 2
-        meta.seq_digest.type = 2;
-        meta.seq_digest.connection_hash = meta.connectionHash;
-        meta.seq_digest.seqNo = meta.seqDiff;
-        meta.seq_digest.connection_hash_rev = meta.connectionHash_rev;
-        meta.seq_digest.seqNo_rev = meta.seqDiff_rev;
+        compute_cookie_value_with_direction();
+        meta.seq_digest.srcAddr = hdr.ipv4.srcAddr;
+        meta.seq_digest.dstAddr = hdr.ipv4.dstAddr;
+        meta.seq_digest.srcPort = hdr.tcp.srcPort;
+        meta.seq_digest.dstPort = hdr.tcp.dstPort;
+        meta.seq_digest.protocol = hdr.ipv4.protocol;
+        meta.seq_digest.seqDiff = meta.cookieValue - hdr.tcp.seqNo;
+        meta.seq_digest.seqDiff_rev = hdr.tcp.seqNo - meta.cookieValue;
 
         //digest packet
         digest(1, meta.seq_digest);
@@ -79,8 +123,6 @@ control MyIngress(inout headers hdr, inout metadata meta,
 
     action send_digest_debug(bit<32> extra) {
         //send digest message to control plane, structure can be adjusted to send any data for debugging
-        // digest messages for connection information has a type 2
-        meta.debug_digest.type = 0;
         meta.debug_digest.data = (bit<32>)meta.debug_bool;
         meta.debug_digest.extra_1 = extra;
 
@@ -146,70 +188,6 @@ control MyIngress(inout headers hdr, inout metadata meta,
         hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
     }
 
-    action compute_connection_hash() {
-        meta.seqDiff = meta.cookieValue - hdr.tcp.seqNo;
-        hash(meta.connectionHash, HashAlgorithm.crc32, (bit<32>)0, {
-            hdr.ipv4.srcAddr,
-            hdr.ipv4.dstAddr,
-            hdr.tcp.srcPort,
-            hdr.tcp.dstPort,
-            hdr.ipv4.protocol
-            }, (bit<32>)65535);
-
-        meta.seqDiff_rev = hdr.tcp.seqNo - meta.cookieValue;
-        hash(meta.connectionHash_rev, HashAlgorithm.crc32, (bit<32>)0, {
-            hdr.ipv4.dstAddr,
-            hdr.ipv4.srcAddr,
-            hdr.tcp.dstPort,
-            hdr.tcp.srcPort,
-            hdr.ipv4.protocol
-            }, (bit<32>)65535);
-    }
-
-    action compute_cookie_value(bit <32> cookieIp, bit <16> cookiePort) {
-        //ref" https://cr.yp.to/syncookies.html
-        //generate a valid cookie, check limitations on each part
-        //syn cookie is the initial sequence number selected by the proxy
-        // first 5 bits: t mod 32, where t is 32 bit time counter
-        // next 3 bits: encoding of MSS selected by the server in response to client's MSS
-        // bottom 24 bits: hash of client IP address port and t
-        // random value for all connections for now
-        bit<5> time = TIMER_COUNT;   //constant value for time
-        bit<3> mss_encoding = MSS_SERVER_ENCODING_VALUE; //random value for mss encvoding
-        bit<24> hash_value;
-
-        //metadata has a timestamp standard_metadata.enq_timestamp ---> bit <32>
-
-        // compute the hash over source address and port number in addition to time counter
-        //check if you need information for the server as well inside the hash or just the client!
-        hash(hash_value, HashAlgorithm.crc16, (bit<24>)0, {
-            cookieIp,
-            cookiePort,
-            time
-            }, (bit<24>)2^24);
-
-        //TODO: find an alternative way to concatenate bit strings --> P4_16 spec says ++ but it does not work!
-    	bit <8> temp = (bit<8>)time;
-    	bit <8> tempWT = temp << 3;
-    	bit <8> tempWTE = tempWT | (bit<8>)mss_encoding;
-    	bit <32> tempSeq = (bit<32>)tempWTE;
-    	bit <32> tempSeqS = tempSeq << 24;
-        meta.cookieValue = tempSeqS | (bit<32>)hash_value;
-    }
-
-    action compute_cookie_value_with_direction() {
-        bit <32> cookieIp = hdr.ipv4.srcAddr;
-        bit <16> cookiePort = hdr.tcp.srcPort;
-        
-        //if(hdr.ipv4.srcAddr == SERVER_ADDRESS){
-        if(standard_metadata.ingress_port == SERVER_PORT){
-            cookieIp = hdr.ipv4.dstAddr;
-            cookiePort = hdr.tcp.dstPort;
-        }
-
-        compute_cookie_value(cookieIp, cookiePort);
-    }
-
     // for TCP checksum calculations, TCP checksum requires some IPv4 header fields in addition to TCP checksum that is
     //not present as a value and must be computed, tcp length = length in bytes of TCP header + TCP payload
     // from IPv4 header we have ipv4 total length that is a sum of the ip header and the ip payload (in our case) the TCP length
@@ -269,6 +247,13 @@ control MyIngress(inout headers hdr, inout metadata meta,
     action create_new_tcp_connection(){
         //this action is used to create a new tcp connection between the proxy and the server
         // minimal flags are set, this action is called based on the ACK packet received
+        
+        // Remove payload from received ACK, but does not work
+        //truncate((bit<32>)54);
+        //hdr.ipv4.totalLen = (bit<16>)40;
+        //standard_metadata.packet_length = (bit<14>)54;
+
+        // Alter TCP
         hdr.tcp.syn = 1;
         hdr.tcp.ack = 0;
 
@@ -347,7 +332,11 @@ control MyIngress(inout headers hdr, inout metadata meta,
 
     table connections {
         key = {
-            meta.connectionHash: exact;
+            hdr.ipv4.srcAddr: exact;
+            hdr.ipv4.dstAddr: exact;
+            hdr.tcp.srcPort: exact;
+            hdr.tcp.dstPort: exact;
+            hdr.ipv4.protocol: exact;
         }
         actions = {
             saveDifferenceValue;
@@ -360,15 +349,11 @@ control MyIngress(inout headers hdr, inout metadata meta,
 
     apply {
         // Normal forwarding scenario after processing based on the scenario
-        if (hdr.ipv4.isValid()) {
-            ipv4_lpm.apply();
-        }
+        //if (hdr.ipv4.isValid()) {
+        //    ipv4_lpm.apply();
+        //}
 
         if(hdr.ipv4.isValid() && hdr.tcp.isValid()){
-            // compute the hash of the connection and check if the TCP connection is already established
-            // This solution replaces multiple apply on table for processing single packet which is not allowed in P4
-            //compute_cookie_value_with_direction();
-            compute_connection_hash();
             if(connections.apply().hit){
                 meta.is_connection_established = 1;
             }else{
@@ -401,8 +386,6 @@ control MyIngress(inout headers hdr, inout metadata meta,
                     //if you receive SYN-ACK from server to create a TCP connection
                     // change the same packet and transform it into ACK packet.
                     // add both connection and reverse to connection list
-                    compute_cookie_value_with_direction();
-                    compute_connection_hash();
                     send_digest_connection();
                     create_ack_response();
                 }else{
@@ -418,7 +401,7 @@ control MyIngress(inout headers hdr, inout metadata meta,
         if (hdr.tcp.isValid()) {
             // TCP length is required for TCP header checksum value calculations.
             // compute TCP length after modification of TCP header
-            compute_tcp_length();
+            //compute_tcp_length();
         }
     }
 }
