@@ -348,9 +348,9 @@ control MyIngress(inout headers hdr, inout metadata meta,
                 //sequence and acknowledgment numbers should be adapted to the new connection
                 forward_request();
             }else{
-                if(hdr.tcp.syn == 1 && hdr.tcp.ack == 0 && hdr.tcp.psh == 0){
+                if(hdr.tcp.syn == 1 && hdr.tcp.ack == 0 && hdr.tcp.psh == 0 && hdr.tcp.fin == 0){
                        create_syn_cookie_packet();
-                }else if(hdr.tcp.ack == 1 && hdr.tcp.syn == 0 && hdr.tcp.psh == 0){
+                } else if(hdr.tcp.ack == 1 && hdr.tcp.syn == 0 && hdr.tcp.psh == 0 && hdr.tcp.fin == 0){
                     // if the packet is a ACK response for the TCP handshake
                     // check cookie value first if it is a valid cookie or not
                     validate_syn_cookie();
@@ -365,13 +365,13 @@ control MyIngress(inout headers hdr, inout metadata meta,
                         drop();
                         return;
                     }
-                }else if(hdr.tcp.ack == 1 && hdr.tcp.syn == 1 && hdr.tcp.psh == 0){
+                } else if(hdr.tcp.ack == 1 && hdr.tcp.syn == 1 && hdr.tcp.psh == 0 && hdr.tcp.fin == 0){
                     //if you receive SYN-ACK from server to create a TCP connection
                     // change the same packet and transform it into ACK packet.
                     // add both connection and reverse to connection list
                     send_digest_connection();
                     create_ack_response();
-                }else{
+                } else {
                     drop();
                     return;
                 }
