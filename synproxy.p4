@@ -38,15 +38,12 @@ struct learn_debug_t {
 
 struct metadata {
     bit<1> is_valid_cookie;
-//    bit<32> connectionHash;
-//    bit<32> connectionHash_rev;
     bit<1> is_connection_established;
     bit<32> tempDiff;
     bit<32> cookieValue;
     bit<16> tcpLength; // this value is computed for each packet for TCP checksum recalculations
     learn_connection_t seq_digest; // Structure for sending digest messages that contain connection information and seqNo
     learn_debug_t debug_digest; // Structure for sending debug digest messages with Type 0
-    bit<1> debug_bool;
 }
 
 #include "parser.p4"
@@ -123,7 +120,7 @@ control MyIngress(inout headers hdr, inout metadata meta,
 
     action send_digest_debug(bit<32> extra) {
         //send digest message to control plane, structure can be adjusted to send any data for debugging
-        meta.debug_digest.data = (bit<32>)meta.debug_bool;
+        meta.debug_digest.data = (bit<32>)0;
         meta.debug_digest.extra_1 = extra;
 
         //digest packet
@@ -314,20 +311,6 @@ control MyIngress(inout headers hdr, inout metadata meta,
         //send_digest_debug(meta.tempDiff);
         
         send_on_the_other_phy();
-    }
-
-    // we have one table responsible for forwarding packets
-    table ipv4_lpm {
-        key = {
-            hdr.ipv4.dstAddr: lpm;
-        }
-        actions = {
-            ipv4_forward;
-            drop;
-            NoAction;
-        }
-        size = 1024;   // maximum number of entries in the table
-        default_action = drop();
     }
 
     table connections {
