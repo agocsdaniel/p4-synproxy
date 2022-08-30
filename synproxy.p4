@@ -134,10 +134,6 @@ control MyIngress(inout headers hdr, inout metadata meta,
 
     // forward packet to the appropriate port
 
-    action send_on_the_same_phy() {
-        standard_metadata.egress_spec = standard_metadata.ingress_port;
-    }
-
     action send_on_the_other_phy() {
         if (standard_metadata.ingress_port == SERVER_PORT) {
             standard_metadata.egress_spec = CLIENT_PORT;
@@ -146,43 +142,26 @@ control MyIngress(inout headers hdr, inout metadata meta,
         }
     }
 
-    action reverse_mac_addresses() {
-        bit<48> srcMAC = hdr.ethernet.srcAddr;
-        bit<48> dstMAC = hdr.ethernet.dstAddr;
-        hdr.ethernet.dstAddr = srcMAC;
-        hdr.ethernet.srcAddr = dstMAC;
-    }
-
-    action reverse_ipv4_addresses() {
-        bit<32> clientAddr = hdr.ipv4.srcAddr;
-        bit<32> serverAddr = hdr.ipv4.dstAddr;
-        hdr.ipv4.srcAddr = serverAddr;
-        hdr.ipv4.dstAddr = clientAddr;
-    }
-
-    action reverse_tcp_ports() {
-        bit<16> clientPort = hdr.tcp.srcPort;
-        bit<16> serverPort = hdr.tcp.dstPort;
-        hdr.tcp.dstPort = clientPort;
-        hdr.tcp.srcPort = serverPort;
-    }
-
-    action swap_addresses() {
-        reverse_mac_addresses();
-        reverse_ipv4_addresses();
-        reverse_tcp_ports();
-    }
-
     action return_to_sender() {
-        send_on_the_same_phy();
-        swap_addresses();
-    }
+        bit<48> temp;
 
-    action ipv4_forward(macAddr_t dstAddr, egressSpec_t port) {
-        //standard_metadata.egress_spec = port;
-        //hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
-        //hdr.ethernet.dstAddr = dstAddr;
-        hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
+        // seap l1
+        standard_metadata.egress_spec = standard_metadata.ingress_port;
+
+        // swap l2
+        temp = (bit<48>)hdr.ethernet.dstAddr;
+        hdr.ethernet.dstAddr = hdr.ethernet.srcAddr;
+        hdr.ethernet.srcAddr = (bit<48>)temp;
+
+        // swap l3
+        temp = (bit<48>)hdr.ipv4.dstAddr;
+        hdr.ipv4.dstAddr = hdr.ipv4.srcAddr;
+        hdr.ipv4.srcAddr = (bit<32>)temp;
+
+        // swap l4
+        temp = (bit<48>)hdr.tcp.dstPort;
+        hdr.tcp.dstPort = hdr.tcp.srcPort;
+        hdr.tcp.srcPort = (bit<16>)temp;
     }
 
     // for TCP checksum calculations, TCP checksum requires some IPv4 header fields in addition to TCP checksum that is
@@ -297,18 +276,12 @@ control MyIngress(inout headers hdr, inout metadata meta,
         // if the packet is sent by the client --> update the ACK number
         // if the packet is sent by the server --> update the sequence number
         // you should have the difference
-        bit<32> sequence = hdr.tcp.seqNo;
-        bit<32> acknowledgment = hdr.tcp.ackNo;
 
-        //if(hdr.ipv4.srcAddr == SERVER_ADDRESS){
         if(standard_metadata.ingress_port == SERVER_PORT){
-            //meta.debug_bool=1;
-            hdr.tcp.seqNo = sequence + meta.tempDiff;
+            hdr.tcp.seqNo = hdr.tcp.seqNo + meta.tempDiff;
         } else {
-            //meta.debug_bool=0;
-            hdr.tcp.ackNo = acknowledgment + meta.tempDiff;
+            hdr.tcp.ackNo = hdr.tcp.ackNo + meta.tempDiff;
         }
-        //send_digest_debug(meta.tempDiff);
         
         send_on_the_other_phy();
     }
@@ -332,9 +305,9 @@ control MyIngress(inout headers hdr, inout metadata meta,
 
     apply {
         // Normal forwarding scenario after processing based on the scenario
-        //if (hdr.ipv4.isValid()) {
-        //    ipv4_lpm.apply();
-        //}
+        if (hdr.ipv4.isValid()) {
+            hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
+        }
 
         if(hdr.ipv4.isValid() && hdr.tcp.isValid()){
             if(connections.apply().hit){
@@ -379,7 +352,6 @@ control MyIngress(inout headers hdr, inout metadata meta,
         } else {
             send_on_the_other_phy();
         }
-        
 
         if (hdr.tcp.isValid()) {
             // TCP length is required for TCP header checksum value calculations.
