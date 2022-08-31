@@ -1,5 +1,9 @@
 # P4 SYNproxy
 
+### Known issues
+
+Actually the code only works *well* when you disable the Flow Cache. This, however result in decrease of speed, but at least it doesn't stop working after ~1.9M packets. A bit of explanation: Because the program reads and alters tcp.seqNo and tcp.ackNo, it will automagically be part of the Flow Cache Key, so in fact every packet will be a different flow and this can quickly fill the cache, where the items evicts after 30 sec by default.
+
 ## Packet flow visualization
 
 ```
