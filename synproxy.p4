@@ -3,10 +3,7 @@
 #include <v1model.p4>
 
 #define TIMER_COUNT 15
-#define MSS_SERVER_ENCODING_VALUE 1
-//represents MSS 1460
-
-#define SERVER_ADDRESS 3232278578
+#define MSS_SERVER_ENCODING_VALUE 1 //represents MSS 1460
 
 #define SERVER_PORT 0
 #define CLIENT_PORT 1
@@ -15,7 +12,6 @@
 *********************** H E A D E R S  ***********************************
 *************************************************************************/
 
-#include "types.p4"
 #include "headers.p4"
 
 struct learn_connection_t {
@@ -95,7 +91,6 @@ control MyIngress(inout headers hdr, inout metadata meta,
         bit <32> cookieIp = hdr.ipv4.srcAddr;
         bit <16> cookiePort = hdr.tcp.srcPort;
         
-        //if(hdr.ipv4.srcAddr == SERVER_ADDRESS){
         if(standard_metadata.ingress_port == SERVER_PORT){
             cookieIp = hdr.ipv4.dstAddr;
             cookiePort = hdr.tcp.dstPort;
@@ -145,27 +140,27 @@ control MyIngress(inout headers hdr, inout metadata meta,
     action return_to_sender() {
         bit<48> temp;
 
-        // seap l1
+        // seap L1
         standard_metadata.egress_spec = standard_metadata.ingress_port;
 
-        // swap l2
+        // swap L2
         temp = (bit<48>)hdr.ethernet.dstAddr;
         hdr.ethernet.dstAddr = hdr.ethernet.srcAddr;
         hdr.ethernet.srcAddr = (bit<48>)temp;
 
-        // swap l3
+        // swap L3
         temp = (bit<48>)hdr.ipv4.dstAddr;
         hdr.ipv4.dstAddr = hdr.ipv4.srcAddr;
         hdr.ipv4.srcAddr = (bit<32>)temp;
 
-        // swap l4
+        // swap L4
         temp = (bit<48>)hdr.tcp.dstPort;
         hdr.tcp.dstPort = hdr.tcp.srcPort;
         hdr.tcp.srcPort = (bit<16>)temp;
     }
 
     // for TCP checksum calculations, TCP checksum requires some IPv4 header fields in addition to TCP checksum that is
-    //not present as a value and must be computed, tcp length = length in bytes of TCP header + TCP payload
+    // not present as a value and must be computed, tcp length = length in bytes of TCP header + TCP payload
     // from IPv4 header we have ipv4 total length that is a sum of the ip header and the ip payload (in our case) the TCP length
     // IPv4 length is IHL field * 4 bytes (or 32 bits 8*4), therefore, tcp length = ipv4 total length - ipv4 header length
     action compute_tcp_length(){
@@ -181,10 +176,10 @@ control MyIngress(inout headers hdr, inout metadata meta,
 
     // create SYN-cookie packet or SYN-ACK in response to a new connection from a client that is not whitelisted
     action create_syn_cookie_packet(){
-        //This action is using the SYN packet received from the client and transform it to SYN-ACK
-        //SeqNo is replaced with custom cookie value computed based in several values.
+        // This action is using the SYN packet received from the client and transform it to SYN-ACK
+        // SeqNo is replaced with custom cookie value computed based in several values.
 
-        //Save all the values before exchangiung them, to be used for hash later
+        // Save all the values before exchangiung them, to be used for hash later
         bit <32> cookieIp = hdr.ipv4.srcAddr;
         bit <16> cookiePort = hdr.tcp.srcPort;
 
@@ -223,13 +218,7 @@ control MyIngress(inout headers hdr, inout metadata meta,
     action create_new_tcp_connection(){
         //this action is used to create a new tcp connection between the proxy and the server
         // minimal flags are set, this action is called based on the ACK packet received
-        
-        // Remove payload from received ACK, but does not work
-        //truncate((bit<32>)54);
-        //hdr.ipv4.totalLen = (bit<16>)40;
-        //standard_metadata.packet_length = (bit<14>)54;
 
-        // Alter TCP
         hdr.tcp.syn = 1;
         hdr.tcp.ack = 0;
 
@@ -248,7 +237,8 @@ control MyIngress(inout headers hdr, inout metadata meta,
         return_to_sender();
 
         // set data offset to 5, to indicate that no options are included
-        // hdr.tcp.dataOffset = 5; // not required, checksum was the cause of the re-transmission problem
+        // but not required, checksum was the cause of the re-transmission problem
+        // hdr.tcp.dataOffset = 5;
 
         // set ACK flags to create the final packet in the TCP handshake
         hdr.tcp.syn = 0;
